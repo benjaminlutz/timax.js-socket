@@ -2,6 +2,7 @@
 
 var bunyan = require('bunyan'),
     express = require('express'),
+    cors = require('cors'),
     config = require('./config'),
     mubsub = require('mubsub'),
     socketio = require('socket.io'),
@@ -12,6 +13,9 @@ var log = bunyan.createLogger(config.logger);
 
 // init express
 var app = express();
+
+// configure CORS
+app.use(cors());
 
 // init mubsub client
 var mubsubclient = mubsub(config.mubsub);
@@ -24,6 +28,9 @@ mubsubclient.on('error', function (err) {
 
 // init mubsub channel
 var channel = mubsubclient.channel('bookings');
+channel.on('error', function (err) {
+    log.error(err, 'Error on channel bookings');
+});
 
 // start http server
 var server = app.listen(config.port, function () {
