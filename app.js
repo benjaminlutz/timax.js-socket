@@ -49,12 +49,17 @@ socket.use(socketioJwt.authorize({
 
 // init channel connection
 socket.on('connection', function (socket) {
-    log.info('Client connected...');
+    var token = socket.decoded_token;
+    log.info('Client [' + token.firstName + ' ' + token.lastName + '] with role [' + token.role + '] connected...');
 
-    channel.subscribe('bookings', function (booking) {
-        log.info('new booking via pub/sub');
-        socket.emit('booking', booking);
-    });
+    if (token.role === 'manager' || token.role === 'admin') {
+        channel.subscribe('bookings', function (booking) {
+            log.debug('New booking from [' + booking.user + '] on project [' + booking.project + ']');
+            socket.emit('booking', booking);
+        });
+    } else {
+        log.warn('Client [' + token.firstName + ' ' + token.lastName + '] with role [' + token.role + '] is not authorized.');
+    }
 });
 
 // expose app
