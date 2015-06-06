@@ -1,5 +1,7 @@
 'use strict';
 
+// require('newrelic');
+
 var bunyan = require('bunyan'),
     express = require('express'),
     cors = require('cors'),
