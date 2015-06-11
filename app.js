@@ -44,6 +44,7 @@ var server = app.listen(config.port, function () {
 
 // init Socket.IO
 var socket = socketio.listen(server);
+socket.set('origins','*');
 socket.use(socketioJwt.authorize({
     secret: config.jwtSecret,
     handshake: true
